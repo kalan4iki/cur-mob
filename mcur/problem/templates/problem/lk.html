@@ -1,0 +1,101 @@
+{% extends "layout/basic.html" %}
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% block title %}Профиль{% endblock %}
+{% block nav2 %}active{% endblock %}
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0 text-dark">Пользователь: <b>{{user.first_name}} {{user.last_name}}</b></h1>
+      </div><!-- /.col -->
+        <div class="col-sm-6">
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<section class="content">
+
+
+{% csrf_token %}
+{% if perms.problem.user_moderator %}
+    {% include "problem/lk/moderator.html" %}
+{% elif perms.problem.user_dispatcher %}
+    {% include "problem/lk/dispatcher.html" %}
+{% elif perms.problem.user_executor %}
+    {% include "problem/lk/executor.html" %}
+{% elif perms.problem.user_ty %}
+    {% include "problem/lk/ty.html" %}
+{% endif %}
+    <div class="row">
+        <div class="col-12">
+           <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Личная информация:</h3>
+            </div>
+            <div class="card-body">
+            {% if not perms.problem.user_ty or user.is_superuser %}
+              <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label"><i class="fas fa-briefcase"></i> Организация: </label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" value="{{ user.userprofile.org}}" disabled>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label"><i class="fas fa-building"></i> Должность: </label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" value="{{ user.userprofile.post}}" disabled>
+                </div>
+              </div>
+            {% else %}
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label"><i class="fas fa-briefcase"></i> Территориальное управление: </label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" value="{{ user.userprofile.ty}}" disabled>
+                </div>
+            </div>
+            {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block ends %}
+<script>
+$(document).ready(function () {
+    var url = '{% url "index" %}';
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var box = $('.small-box')
+    $.map(box, function (item) {
+        var box = $(item);
+        var posting = $.ajax({
+            url: url,
+            type: 'POST',
+            data: {csrfmiddlewaretoken: CSRFtoken, box: box.attr('id')},
+            success: onAjaxSuccess
+        });
+    });
+});
+
+function onAjaxSuccess(data) {
+    if (data['mes'] === 'succes') {
+        var box = $('#'+data['boxn']);
+        box.find('.inner').find('h3').text(data['kolvo']);
+    }
+}
+
+{% if messages %}
+    {% for message in messages %}
+        toastr[{% if message.tags %}'{{ message.tags }}'{% else %}'info'{% endif %}]('{{ message }}', 'Уведомление');
+    {% endfor %}
+{% endif %}
+</script>
+{% endblock %}

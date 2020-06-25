@@ -1,0 +1,47 @@
+{% extends "layout/basic.html" %}
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% block name %}Добавление срока{% endblock %}
+{% block nav1 %}active{% endblock %}
+{% block nav101 %}active{% endblock %}
+{% block content %}
+{% if auth %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0 text-dark">Добавление срока для жалобы №{{ np.nomdobr }}</h1>
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<section class="content">
+      <div class="card card-primary">
+        <div class="card-header">
+          <h3 class="card-title"> </h3>
+        </div>
+        <form role="form" method="post">
+          {% csrf_token %}
+          <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <div id="div_id_date" class="form-group">
+                <label for="id_date" class="">Срок<span class="asteriskField">*</span></label>
+                <div class="">
+                  <input type="date" name="date" maxlength="50" class="textinput textInput form-control" id="id_date" required>
+                  <small id="hint_id_date"></small>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              {{ formadd.curat|as_crispy_field }}
+            </div>
+          </div>
+          {{ formadd.desck|as_crispy_field }}
+          </div>
+        </form>
+      </div>
+</section>
+{% endif %}
+{% endblock %}

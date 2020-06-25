@@ -1,0 +1,53 @@
+[apache2]
+Настройка apache2:
+sudo nano /etc/apache2/apache2.conf
+
+Настройка виртуального хоста:
+sudo nano /etc/apache2/sites-enabled/000-default.conf
+
+Настройка виртуального хоста ssl:
+sudo nano /etc/apache2/sites-available/default-ssl.conf
+
+sudo a2ensite default-ssl
+sudo a2enmod rewrite
+
+Перезагрузка apache2:
+sudo service apache2 restart
+
+
+[/apache2]
+./configure --with-apxs=/usr/local/apache/bin/apxs   --with-python=/usr/local/bin/python3.6
+
+Установка пакета для python
+sudo /home/env/bin/python3 -m pip install
+
+Активация виртуального окружения:
+source /home/env/bin/activate
+
+Запуск debug сервера со статикой:
+python manage.py runserver --insecure
+
+[systemd]
+sudo nano /etc/systemd/system/parser.service
+sudo systemctl daemon-reload
+sudo systemctl enable parser.service
+sudo systemctl start parser.service
+sudo systemctl stop parser.service
+
+[Остлеживание логов]
+Установка приложения
+sudo apt install lnav
+Ошибка apache2:
+sudo lnav /var/log/apache2/error.log
+
+Логи сайта:
+sudo lnav /home/media/error.log
+sudo lnav /home/media/info.log
+
+cd /var/www/cur-problem & sudo git pull & sudo service apache2 restart
+
+pscp.exe vadim@192.168.10.25:/home/vadim/skiog.ru.pem .
+
+[Запуск Celery]
+sudo celery -A parsers beat
+sudo celery worker -A parsers

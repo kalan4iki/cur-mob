@@ -1,0 +1,635 @@
+{% extends "layout/basic.html" %}
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}Обращение №{{ np.nomdobr }}{% endblock %}
+{% block nav2 %}active{% endblock %}
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        {% if back != False %}
+        <a href="{{ back }}" class="btn btn-app float-sm-left">
+              <i class="fas fa-backward"></i> Назад
+        </a>
+        {% endif %}
+      </div><!-- /.col -->
+      <div class="col-sm-6 ">
+        <a href="{% url 'export_pdf' np.nomdobr %}" class="btn btn-app float-sm-right">
+              <i class="fas fa-print"></i> Печатать
+        </a>
+        {% if perms.problem.user_moderator %}
+        <button class="btn btn-app float-sm-right" data-toggle="modal" data-target="#modal-ty" {% if np.visible == '0' and not np.ciogv %}disabled{% endif %}>
+              <i class="fas fa-download"></i> Назначить ТУ
+        </button>
+        <button class="btn btn-app float-sm-right" data-toggle="modal" data-target="#modal-addterm" {% if np.visible == '0' %}disabled{% endif %}>
+              <i class="fa fa-plus-square"></i> Добавить назначение
+        </button>
+        {% endif %}
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+
+<div class="modal fade" id="modal-addterm">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Добавление срока для обращения №{{ np.nomdobr }}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form role="form" action="{% url 'termadd' np.pk %}" method="post" id="termform">
+        <div class="modal-body">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col">
+                <div id="div_id_date" class="form-group">
+                  <label for="id_date" class="">Срок<span class="asteriskField">*</span></label>
+                  <div class="">
+                    <input type="date" name="date" maxlength="50" class="textinput textInput form-control" id="id_date" required>
+                    <small id="hint_id_date"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+              <div class="card card-primary card-outline card-outline-tabs">
+              <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#formadd-tabs-three-org" role="tab" aria-controls="formadd-tabs-three-org" aria-selected="true">Организация</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#formadd-tabs-three-curat" role="tab" aria-controls="formadd-tabs-three-curat" aria-selected="false">Отдел</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="custom-tabs-three-messages-tab" data-toggle="pill" href="#formadd-tabs-three-curatuser" role="tab" aria-controls="formadd-tabs-three-curatuser" aria-selected="false">Сотрудник</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <div class="tab-content" id="custom-tabs-three-tabContent">
+                  <div class="tab-pane fade active show" id="formadd-tabs-three-org" role="tabpanel" aria-labelledby="formadd-tabs-three-org-tab">
+                    {{ formadd.org|as_crispy_field }}
+                  </div>
+                  <div class="tab-pane fade" id="formadd-tabs-three-curat" role="tabpanel" aria-labelledby="formadd-tabs-three-curat-tab">
+                    {{ formadd.curat|as_crispy_field }}
+                  </div>
+                  <div class="tab-pane fade" id="formadd-tabs-three-curatuser" role="tabpanel" aria-labelledby="formadd-tabs-three-curatuser-tab">
+                    {{ formadd.curatuser|as_crispy_field }}
+                  </div>
+                </div>
+              </div>
+              <!-- /.card -->
+            </div>
+            </div>
+            </div>
+            {{ formadd.desck|as_crispy_field }}
+            <div class="row">
+                <div class="col-6">
+                    {{ formadd.further|as_crispy_field }}
+                </div>
+                <div class="col-6">
+                    {{ formadd.furtherdate|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div class="modal fade" id="modal-ty">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Назначение территориального управления</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form role="form" action="{% url 'addty' %}" method="post" id="tyform">
+        <div class="modal-body">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    {{ tyform.name|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{% for i in terms %}
+{% if not i.answers.all %}
+<div class="modal fade" id="modal-answer-{{ i.pk }}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Ответ на назначение №{{ i.pk }}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form role="form" action="{% url 'addanswer' i.pk %}" method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+          {% csrf_token %}
+          {{ answeradd.text|as_crispy_field }}
+          {{ answeradd.image|as_crispy_field }}
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Ответить</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div class="modal fade" id="modal-resolution-{{ i.pk }}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Резолюция на назначение №{{ i.pk }}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form role="form" action="{% url 'resolutionadd' i.pk %}" method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col">
+            <div class="card card-primary card-outline card-outline-tabs">
+            <div class="card-header p-0 border-bottom-0">
+              <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#resform-tabs-three-curat" role="tab" aria-controls="resform-tabs-three-curat" aria-selected="false">Отдел</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#resform-tabs-three-curatuser" role="tab" aria-controls="resform-tabs-three-curatuser" aria-selected="false">Сотрудник</a>
+                </li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <div class="tab-content" id="custom-tabs-three-tabContent">
+                <div class="tab-pane fade active show" id="resform-tabs-three-curat" role="tabpanel" aria-labelledby="cresform-tabs-three-curat-tab">
+                  {{ resform.curat|as_crispy_field }}
+                </div>
+                <div class="tab-pane fade" id="resform-tabs-three-curatuser" role="tabpanel" aria-labelledby="resform-tabs-three-curatuser-tab">
+                  {{ resform.curatuser|as_crispy_field }}
+                </div>
+              </div>
+            </div>
+            <!-- /.card -->
+          </div>
+          </div>
+          </div>
+          {{ resform.text|as_crispy_field }}
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Ответить</button>
+        </div>
+      </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{% endif %}
+{% endfor %}
+<section class="content">
+  <div class="row">
+    <div class="col-md-6">
+        <div class="card">
+          <!-- /.card-header -->
+          <div class="card-body">
+            <div class="row">
+              {% if np.ciogv %}
+                <div class="col-md-12">
+                    <div class="alert alert-info alert-dismissible">
+                      <h5><i class="icon fas fa-info"></i>Курирующее территориальное управление: <b>{{np.ciogv}}</b></h5>
+                    </div>
+                </div>
+              {% else %}
+                <div class="col-md-10">
+                    <div class="alert alert-warning alert-dismissible">
+                      <h5><i class="icon fas fa-exclamation-triangle"></i>Нет курирующего территориального управления</h5>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    {% if perms.problem.user_moderator %}
+                    <button class="btn btn-app float-sm-right" data-toggle="modal" data-target="#modal-ty" {% if np.visible == '0' %}disabled{% endif %}>
+                          <i class="fas fa-download"></i> Назначить ТУ
+                    </button>
+                    {% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      {% for i in terms %}
+      <div class="card {{resdat.i.pk}} {% if i.further %}card-warning{% endif %} card-widget collapsed-card">
+        <div class="card-header ">
+          <div class="user-block">
+            <img class="img-circle" src="{% static 'adminlte/dist/img/term.png' %}" alt="User Image">
+            <span class="username">Ответственный:
+            {% if i.org %}
+            | {{i.org}} |
+            {% endif %}
+            {% if i.curat %}
+            | {{i.curat}} |
+            {% endif %}
+            {% if i.curatuser %}
+            | {{ i.curatuser.first_name }} {{ i.curatuser.last_name }} |
+            {% endif %}
+            </span>
+            <span class="description">{% if not i.further %}Дата создания - {{ i.datecre }}{% endif %} Статус - <b>{{i.get_status_display}}. </b>Срок исполнения - <b>{{i.date}}</b>
+            {% if i.further %}<span class="badge badge-info">Обещанное: {{i.furtherdate}}</span>{% endif %}</span>
+          </div>
+          <!-- /.user-block -->
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Развернуть/свернуть"><i class="fas fa-plus"></i>
+            </button>
+              {% if perms.problem.user_moderator %}
+            <button type="button" class="btn btn-tool btneditdate" id="{{ i.pk }}" title="Изменить дату"><i class="fa fa-pencil"></i>
+            </button>
+            <button type="button" class="btn btn-tool" id="approve-{{ i.pk }}" title="Утвердить назначение"><i class="fa fa-check"></i>
+            </button>
+            <button type="button" class="btn btn-tool" id="del-{{ i.pk }}" title="Удалить"><i class="fas fa-times"></i>
+            </button>
+              {% endif %}
+          </div>
+          <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body" style="display: none;">
+          <!-- post text -->
+          Назначил: <b>{{ i.user.first_name }} {{ i.user.last_name }}</b>.
+          <p></p>
+          <p><b>Текст назначения: </b> {{ i.desck }}</p>
+          <!-- Social sharing buttons -->
+          {% if not i.on_close%}
+            {% if not perms.problem.user_ty or user.is_superuser %}
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-resolution-{{ i.pk }}"><i class="fas fa-share"></i> Добавить подрезолюцию</button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-answer-{{ i.pk }}"><i class="far fa-thumbs-up"></i> Ответить</button>
+            {% endif %}
+          {% endif %}
+          <span class="float-right text-muted">Резолюций: {{i.resolutions.all|length}}. Ответов: {{i.answers.all|length}}</span>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer card-comments" style="display: none;">
+          {% if i.resolutions %}
+          {% for j in i.resolutions.all %}
+          <div class="card-comment">
+            <!-- User image -->
+            <img class="img-circle img-sm" src="{% static 'adminlte/dist/img/resol.png' %}" alt="User Image">
+            <div class="comment-text">
+              <span class="username">
+                Резолюция
+                <span class="text-muted float-right">{{j.datecre}}</span>
+              </span><!-- /.username -->
+              Автор резолюции: <b>{{ j.user.first_name }} {{ j.user.last_name }}</b>
+              <p></p>
+              Ответственный: <b>{{ j.curatuser.first_name }} {{ j.curatuser.last_name }}</b>
+              <p></p>
+              <p>Текст резолюции: {{j.text}}</p>
+            </div>
+            <!-- /.comment-text -->
+          </div>
+          <!-- /.card-comment -->
+          {% endfor %}
+          {% endif %}
+          {% if i.answers %}
+          {% for j in i.answers.all %}
+          <div class="card-comment">
+            <!-- User image -->
+            <img class="img-circle img-sm" src="{% static 'adminlte/dist/img/answer.png' %}" alt="User Image">
+            <div class="comment-text">
+              <span class="username">
+                Ответ
+                <span class="text-muted float-right">{{j.datecre}}</span>
+              </span><!-- /.username -->
+              Автор ответа: <b>{{ j.user.first_name }} {{ j.user.last_name }}</b>
+              <p></p>
+              Статус ответа: <b>{{j.get_status_display}}</b>
+              <p></p>
+              <p>Текст ответа: {{j.text}}</p>
+              {% if perms.problem.user_moderator  %}
+              {% if j.status == '0' %}
+              <a type="button" class="btn btn-default btn-sm" href="{% url 'answer_approve' j.pk %}"><i class="far fa-thumbs-up"></i> Утвердить</a>
+              <a type="button" class="btn btn-default btn-sm" href="{% url 'answer_modify' j.pk %}"><i class="fas fa-share"></i>Удалить ответ</a>
+              {% endif %}
+              {% endif %}
+              {% if j.imgs.all %}
+              <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-photo-{{ j.pk }}"><i class="far fa-image"></i> Фотографии</button>
+              {% endif %}
+            </div>
+            <!-- /.comment-text -->
+
+          </div>
+          <!-- /.card-comment -->
+          {% if j.imgs.all %}
+          <div class="modal fade" id="modal-photo-{{ j.pk }}">
+            <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Фотографии ответа №{{ j.pk }}</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    {% for k in j.imgs.all %}
+                    <div class="col">
+                      <img src="{{k.file.url}}" class="img-fluid" style="width: 100%;">
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                </div>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        </div>
+        <!-- /.card-footer -->
+        <div class="card-footer" style="display: none;">
+        </div>
+        <!-- /.card-footer -->
+      </div>
+      {% endfor %}
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+          <div class="card-header ui-sortable-handle">
+            <h3 class="card-title">Обращение №{{ np.nomdobr }}. Статус в доброделе: <strong>{{ np.status }}</strong>. Статус: <strong>{{ np.get_statussys_display }}</strong></h3>
+            <div class="card-tools">
+              {% if user.is_staff %}
+              <a type="button" href="{% url 'admin:index' %}problem/problem/{{np.pk}}/change/" class="btn btn-tool" data-toggle="tooltip" data-placement="top" title="В кабинете администратора" target="_blank">
+                <i class="fa fa-user" aria-hidden="true"></i>
+              </a>
+              {% endif %}
+              {% if perms.problem.user_moderator %}
+              <button type="button" class="btn btn-tool" data-toggle="tooltip" data-placement="top" title="На обновление" id="naobn">
+                <i class="fa fa-arrow-up"></i>
+              </button>
+              {% endif %}
+              <a type="button" href="https://vmeste.mosreg.ru/CardEditListExt?show=/Topic?id={{np.nomdobr}}" class="btn btn-tool" data-toggle="tooltip" data-placement="top" title="Перейти на добродел" target="_blank">
+                <i class="fa fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <div id="div_id_temat" class="form-group">
+                  <label for="id_temat" class="">Тематика</label>
+                  <div class="">
+                    <textarea class="form-control" rows="3" placeholder="{{ np.temat }}" disabled></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div id="div_id_adres" class="form-group">
+                  <label for="id_adres" class="">Адрес</label>
+                  <div class="">
+                    <textarea class="form-control" rows="3" placeholder="{{ np.adres }}" disabled></textarea>
+                  </div>
+                </div>
+              </div>
+          </div>
+            <div class="row">
+              <div class="col">
+                <div class="col">
+                  <div id="div_id_datecre" class="form-group">
+                    <label for="id_datecre" class="">Дата создания</label>
+                    <div class="">
+                      <input type="text" name="datecre" value="{{ np.datecre }}" class="dateinput form-control" id="id_datecre" disabled="">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div id="div_id_datecrok" class="form-group">
+                  <label for="id_datecrok" class="">Срок добродел</label>
+                  <div class="">
+                    <input type="text" name="datecrok" value="{{ np.dateotv }}" class="dateinput form-control" id="id_datecrok" disabled="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="div_id_text" class="form-group">
+              <label for="id_text" class="">Текс обращения</label>
+              <div class="">
+                <textarea class="form-control" rows="5" placeholder="{{ np.text }}" disabled=""></textarea>
+              </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+            {% if np.visible == '0' %}
+            <div class="overlay">
+                <i class="fa fa-eye-slash fa-5x" aria-hidden="true"></i>
+                <h3><b>Обращение скрыто в системе</b></h3>
+            </div>
+            {% endif %}
+      </div>
+    </div>
+  </div>
+<!-- Modal -->
+<div class="modal fade" id="modal-changedate">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Изменение даты</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form role="form" action="{% url 'changeterm' %}" method="post" id="changedate">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="row">
+              <div class="col">
+                <div id="div_id_date_new" class="form-group">
+                  <label for="id_date_new" class="">Срок исполнения<span class="asteriskField">*</span></label>
+                  <div class="">
+                    <input type="date" name="date" maxlength="50" class="textinput textInput form-control" id="id_date_new" required value="">
+                    <small id="hint_id_date_new"></small>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Изменить</button>
+        </div>
+        </form>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{% include 'chat/chatproblem.html' with nd=np.nomdobr %}
+</section>
+{% endblock %}
+
+{% block ends %}
+<script>
+$('#termform').submit(function (event) {
+    event.preventDefault();
+    var $form = $( this ),
+        date = $form.find('input[name="date"]').val(),
+        sele1 = $form.find('select[name="org"]').val(),
+        sele2 = $form.find('select[name="curat"]').val(),
+        sele3 = $form.find('select[name="curatuser"]').val(),
+        text = $form.find('textarea[name="desck"]').val(),
+        further = $form.find('input[name="further"]').prop('checked'),
+        furtherdate = $form.find('input[name="furtherdate"]').val(),
+        url = $form.attr( 'action' ),
+        CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken, date: date, org: sele1, curat:sele2, curatuser:sele3, desck:text, further:further, furtherdate:furtherdate}, onAjaxSuccess);
+    $('#modal-addterm').modal('hide');
+});
+
+$('#tyform').submit(function (event) {
+    event.preventDefault();
+    var $form = $( this ),
+        name = $form.find('select[name="name"]').val(),
+        url = $form.attr( 'action' ),
+        CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken, name: name, prob: {{ np.nomdobr }}}, onAjaxSuccess);
+    $('#modal-ty').modal('hide');
+});
+
+$('#naobn').click(function () {
+        var url = '{% url 'addparsing' np.nomdobr %}',
+            CSRFtoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken}, onAjaxSuccess);
+    });
+{% for i in terms %}
+{% if perms.problem.user_moderator %}
+$('#approve-{{ i.pk }}').click(function () {
+        var url = '{% url 'term_approve' i.pk %}',
+            CSRFtoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken}, onAjaxSuccess);
+    });
+
+$('#del-{{ i.pk }}').click(function () {
+        var url = '{% url "termdel" i.pk %}',
+            CSRFtoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken}, onAjaxSuccess);
+    });
+{% endif %}
+{% endfor %}
+
+$('.btneditdate').click(function () {
+    var but = $( this ),
+        url = '{% url 'changeterm' %}',
+        pk = but.attr('id'),
+        CSRFtoken = $('input[name=csrfmiddlewaretoken]').val(),
+        posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken, view: true, pk:pk});
+        posting.done(function (datas) {
+            var modalka = $('#modal-changedate'),
+                a = modalka.find('input[id="id_date_new"]'),
+                but = modalka.find('button[type="submit"]');
+            but.attr('id', pk);
+            a.attr('value', datas['date']);
+            modalka.modal('show')
+        })
+});
+
+$('#changedate').submit(function (event) {
+    event.preventDefault();
+    var $form = $( this ),
+        pk = $form.find('button[type="submit"]').attr('id'),
+        date = $form.find('input[id="id_date_new"]').val(),
+        url = $form.attr( 'action' ),
+        CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+    var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken, pk:pk, date:date, change: true});
+    posting.done(function (datas) {
+        var modalka = $('#modal-changedate');
+        modalka.modal('hide');
+        onAjaxSuccess(datas);
+    })
+});
+
+$(document).ready(function () {
+    var fd = $('#id_furtherdate');
+    fd.attr('readonly', true);
+    fd.attr('type', 'date');
+});
+
+$('#id_further').change(function () {
+    var cb = $( this );
+    if(this.checked) {
+       cb.parents("div[class='row']").find('#id_furtherdate').attr('readonly', false)
+    } else {
+       cb.parents("div[class='row']").find('#id_furtherdate').attr('readonly', true)
+    }
+});
+
+function onAjaxSuccess(data)
+{
+
+    if (data['nom'] === 0) {
+        Swal.fire({
+            title: data['title'],
+            text: data['message'],
+            icon: 'success',
+            onClose: reloadModal
+        })
+
+    } else {
+        Swal.fire(
+            data['title'],
+            data['message'],
+            'error'
+        )
+    }
+}
+
+function reloadModal() {
+    location.reload()
+}
+
+
+</script>
+{% endblock %}

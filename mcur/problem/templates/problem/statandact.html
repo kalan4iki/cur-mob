@@ -1,0 +1,301 @@
+{% extends "layout/basic.html" %}
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}Статистика и действия{% endblock %}
+{% block nav6 %}active{% endblock %}
+{% block nav62 %}active{% endblock %}
+{% block nav622 %}active{% endblock %}
+{% block content %}
+<div class="content-header" xmlns="http://www.w3.org/1999/html">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+          {% csrf_token %}
+        <h1>Жалобы и действия {{ test }}</h1>
+      </div><!-- /.col -->
+
+    <div class="col-sm-6">
+
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Стасистика</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-toggle="tooltip" data-placement="top" title="Обновить" id="refresh">
+                                <i class="fa fa-refresh" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                     <div class="card-body">
+                        <div class="chart">
+                        <div class="chartjs-size-monitor">
+                            <div class="chartjs-size-monitor-expand">
+                                <div class="">
+
+                                </div>
+                            </div>
+                            <div class="chartjs-size-monitor-shrink">
+                                <div class="">
+
+                                </div>
+                            </div>
+                        </div>
+                            <canvas id="barChart" ></canvas>
+                        </div>
+                     </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Действия</h3>
+                    </div>
+                     <div class="card-body">
+                         <div class="row">
+                             <div class="col-md-2">
+                                <form class='formaction' method="post" action="{% url 'api_action' %}" id="action1">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-eye-slash"></i> Скрыть жалобы
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+                                <form class='formaction' method="post" action="{% url 'api_action' %}" id="action2">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-sync"></i> Обновить жалобы
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+                                <form class='formaction' method="post" action="{% url 'api_action' %}" id="action3">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-sync"></i> Обновить парсер
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+                                 <form class='formaction' method="post" action="{% url 'api_action' %}" id="action4">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-plus"></i> Новые жалобы
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+                                 <form class='formaction' method="post" action="{% url 'api_action' %}" id="action5">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-sync"></i> Обновить сегодня
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+                                 <form class='formaction' method="post" action="{% url 'api_action' %}" id="action6">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-sync"></i> Просмотреть срок
+                                    </button>
+                                </form>
+                            </div>
+                         </div>
+                         <div class="row">
+                            <div class="col-md-2">
+                                <form class='formaction' method="post" action="{% url 'api_action' %}" id="action7">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-sync"></i> Скриншот парсера
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+                                <form class='formaction' method="post" action="{% url 'api_action' %}" id="action8">
+                                    <button type="submit" class="btn btn-app" >
+                                        <i class="fas fa-sync"></i> Добавить авторов
+                                    </button>
+                                </form>
+                            </div>
+                             <div class="col-md-2">
+
+                            </div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Парсеры</h3>
+                            <div class="card-tools">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                      <i class="fas fa-wrench"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" role="menu" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(46px, 19px, 0px);">
+                                      <a href="#" class="dropdown-item">Запустить действие</a>
+                                      <a href="#" class="dropdown-item">Another action</a>
+                                      <a href="#" class="dropdown-item">Something else here</a>
+                                      <a class="dropdown-divider"></a>
+                                      <a href="#" class="dropdown-item">Separated link</a>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-toggle="tooltip" data-placement="top" title="Обновить">
+                                <i class="fa fa-refresh" aria-hidden="true"></i>
+                            </button>
+                            </div>
+                        </div>
+                         <div class="card-body">
+                            <div class="table-responsive p-0">
+                                {% render_table parsers %}
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Действия в очереди и сегодня</h3>
+                            <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-toggle="tooltip" data-placement="top" title="Обновить" id=""> {# TODO доделать обновление действий #}
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                        </div>
+                         <div class="card-body">
+                            <div class="table-responsive p-0">
+                                {% render_table action %}
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="modal fade" id="modal-default" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Default Modal</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>One fine body…</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+</section>
+{% endblock %}
+
+{% block ends %}
+<script>
+var areaChartData = {
+  labels  : {{ content.status|safe }},
+  datasets: [
+    {
+      label               : 'Жалобы показанные на сайте',
+      backgroundColor     : 'rgba(60,141,188,0.9)',
+      borderColor         : 'rgba(60,141,188,0.8)',
+      pointRadius          : false,
+      pointColor          : '#3b8bba',
+      pointStrokeColor    : 'rgba(60,141,188,1)',
+      pointHighlightFill  : '#fff',
+      pointHighlightStroke: 'rgba(60,141,188,1)',
+      data                : {{ content.kolvo|safe }}
+    }
+  ]
+};
+
+var barChartCanvas = $('#barChart').get(0).getContext('2d'),
+    barChartData = jQuery.extend(true, {}, areaChartData),
+    temp0 = areaChartData.datasets[0];
+    barChartData.datasets[0] = temp0;
+
+var barChartOptions = {
+  responsive              : true,
+  maintainAspectRatio     : false,
+  datasetFill             : false
+};
+
+var barChart = new Chart(barChartCanvas, {
+  type: 'bar',
+  data: barChartData,
+  options: barChartOptions
+});
+
+$('.formaction').submit(function (event) {
+    event.preventDefault();
+    var $form = $( this ),
+        url = $form.attr( 'action' ),
+        CSRFtoken = jQuery("[name=csrfmiddlewaretoken]").val(),
+        act = $form.attr('id');
+    var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken, action: act}, onAjaxSuccess);
+});
+
+$('#refresh').click(function () {
+    var url = "{% url 'statandact' %}",
+            CSRFtoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+        var posting = $.post( url, {csrfmiddlewaretoken: CSRFtoken, refresh: '1'}, Refresh);
+});
+
+function Refresh(data)
+{
+    areaChartData.datasets[0].data = data['kolvo'];
+    barChartData.datasets[0] = areaChartData.datasets[0];
+    barChart.data.datasets = areaChartData.datasets;
+    barChart.update();
+    onAjaxSuccess(data)
+}
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": true,
+  "progressBar": true,
+  "positionClass": "toast-top-right",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": "5000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+};
+
+function onAjaxSuccess(data)
+{
+    if (data['nom'] === 0) {
+        toastr["success"](data['message'], data['title'])
+    } else {
+        toastr["error"](data['message'], data['title'])
+    }
+}
+</script>
+{% endblock %}
