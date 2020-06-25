@@ -34,8 +34,7 @@ else:
 
 ALLOWED_HOSTS = [
 '127.0.0.1',
-'192.168.10.82',
-'192.168.10.25',
+'192.168.10.87',
 'skiog.ru',
 'local.skiog.ru'
 ]
@@ -108,7 +107,7 @@ DATABASES = {
         'NAME': 'mcur',
         'USER': 'django',
         'PASSWORD': '211563',
-        'HOST': '192.168.10.25',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
@@ -167,8 +166,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Windows media
 if 'linux' in platform.lower():
-    MEDIA_ROOT = '/home/media/' #Linux media
-    STATIC_ROOT = '/home/static/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Linux media
+    STATIC_ROOT = os.path.join(BASE_DIR, 'files', 'static')
 else:
     MEDIA_ROOT = 'C:/www/media/'
     STATIC_ROOT = 'C:/www/static/'
