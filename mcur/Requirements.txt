@@ -13,6 +13,7 @@ django-tinymce
 django-grappelli
 djangorestframework
 django-webpush
+mysql-python
 lxml
 matplotlib
 numpy
