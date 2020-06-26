@@ -27,10 +27,7 @@ SECRET_KEY = 'fqovv=(m$_j)qy)exjeo1#z(1u0r-s1@*(=^)%xgh^od%cf_)3'
 SKIOG_VERSION = '0.3.0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if 'linux' in platform.lower():
-    DEBUG = False
-else:
-    DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
 '127.0.0.1',
@@ -161,20 +158,11 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Windows media
-#if 'linux' in platform.lower():
 MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Linux media
 STATIC_ROOT = os.path.join(BASE_DIR, 'files', 'static')
-# else:
-#     MEDIA_ROOT = 'C:/www/media/'
-#     STATIC_ROOT = 'C:/www/static/'
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
-#    'C:/GitHub/cur-problem/mcur/problem/static',
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'problem/static'),
 ]
