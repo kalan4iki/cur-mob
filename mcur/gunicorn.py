@@ -11,7 +11,7 @@ worker_class = 'gevent'
 workers = max_workers()
 
 env = {
-    'DJANGO_SETTINGS_MODULE': '<project>.settings'
+    'DJANGO_SETTINGS_MODULE': 'mcur.settings'
 }
 
 reload = True
