@@ -408,7 +408,7 @@ class AnswerObject(object):
 
 @csrf_exempt
 def api_answer_detail(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         answ = Answer.objects.filter(status='0')
         prob = len(Problem.objects.filter(visible='1', statussys='2'))
         a = AnswerObject(kollno=prob, kolvosogl=len(answ))

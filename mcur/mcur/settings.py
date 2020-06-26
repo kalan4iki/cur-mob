@@ -104,7 +104,7 @@ DATABASES = {
         'NAME': 'mcur',
         'USER': 'django',
         'PASSWORD': '211563',
-        'HOST': 'localhost',
+        'HOST': '192.168.10.87',
         'PORT': '3306',
     }
 }
