@@ -50,10 +50,12 @@ import xlwt
 import random
 import os
 import logging
+import traceback
 
 
 logger = logging.getLogger('django.server')
 logger_mail = logging.getLogger('django.request')
+logger_error = logging.getLogger('file_error')
 chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 
 
@@ -61,6 +63,14 @@ class ProblemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
         fields = ('__all__')
+
+def log_error(func):
+     def _call_func(*args, **argd):
+         try:
+             func(*args, **argd)
+         except:
+             print(logger_error.error(traceback.format_exc()))
+     return _call_func
 
 
 @api_view(['POST'])
@@ -133,7 +143,7 @@ class ActionObject(object):
         self.message = message
 
 
-@api_view(['POST'])
+@log_error
 def api_action(request):
     if request.user.has_perm('problem.user_moderator'):
         if request.method == 'POST':
@@ -237,14 +247,10 @@ def api_report(request):
         if request.method == 'POST':
             nowdatetime = datetime.now()
             if request.POST['report'] == '1':
-                if 'linux' in platform.lower():
-                    temp = request.POST['datefrom'].split('-')
-                    datefrom = date(int(temp[0]), int(temp[1]), int(temp[2]))
-                    temp = request.POST['datebefore'].split('-')
-                    datebefore = date(int(temp[0]), int(temp[1]), int(temp[2]))
-                else:
-                    datefrom = date.fromisoformat(request.POST['datefrom'])
-                    datebefore = date.fromisoformat(request.POST['datebefore'])
+                temp = request.POST['datefrom'].split('-')
+                datefrom = date(int(temp[0]), int(temp[1]), int(temp[2]))
+                temp = request.POST['datebefore'].split('-')
+                datebefore = date(int(temp[0]), int(temp[1]), int(temp[2]))
                 wb = xlwt.Workbook(encoding='utf-8')
                 ws = wb.add_sheet('problems')
                 row_num = 0
