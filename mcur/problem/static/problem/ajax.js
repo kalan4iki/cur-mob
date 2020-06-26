@@ -23,7 +23,6 @@ window.onload = function() {
       CSRFtoken = getCookie('csrftoken');
       post = $.post(url, {csrfmiddlewaretoken: CSRFtoken});
   post.done(function (dates) {
-      console.log(dates);
       notif.text(dates['kolvosogl'] + dates['kollno']);
       spannot.text(dates['kolvosogl'] + dates['kollno'] + ' Уведомлений');
       not1.empty();

@@ -564,7 +564,7 @@ function onAjaxSuccess(data)
 {
     const dummy = document.createElement('a');
     dummy.href = data['url'];
-    {#dummy.download = 'my-filename.ext';#}
+    console.log(data);
 
     document.body.appendChild(dummy);
     dummy.click();
