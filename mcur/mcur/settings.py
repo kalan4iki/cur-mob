@@ -165,12 +165,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Windows media
-if 'linux' in platform.lower():
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Linux media
-    STATIC_ROOT = os.path.join(BASE_DIR, 'files', 'static')
-else:
-    MEDIA_ROOT = 'C:/www/media/'
-    STATIC_ROOT = 'C:/www/static/'
+#if 'linux' in platform.lower():
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files', 'media') #Linux media
+STATIC_ROOT = os.path.join(BASE_DIR, 'files', 'static')
+# else:
+#     MEDIA_ROOT = 'C:/www/media/'
+#     STATIC_ROOT = 'C:/www/static/'
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
