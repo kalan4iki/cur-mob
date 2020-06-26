@@ -269,10 +269,7 @@ def api_report(request):
                             ws.write(row_num, col_num, row[col_num], font_style)
                 name = f'{nowdatetime.day}{nowdatetime.month}{nowdatetime.year}{nowdatetime.hour}{nowdatetime.minute}.xls'
                 wb.save(f'{settings.MEDIA_ROOT}xls/{name}')
-                if 'linux' in platform.lower():
-                    url = f'https://skiog.ru/media/xls/{name}'
-                else:
-                    url = f'http://127.0.0.1:8000/media/xls/{name}'
+                url = f'{request.META["HTTP_ORIGIN"]}/media/xls/{name}'
                 title = 'Успешно'
                 mes = 'Отчет подготовлен!'
                 nom = 0
@@ -303,10 +300,7 @@ def api_report(request):
                             ws.write(row_num, col_num, row[col_num], font_style)
                 name = f'{nowdatetime.day}{nowdatetime.month}{nowdatetime.year}{nowdatetime.hour}{nowdatetime.minute}.xls'
                 wb.save(f'{settings.MEDIA_ROOT}xls/{name}')
-                if 'linux' in platform.lower():
-                    url = f'https://skiog.ru/media/xls/{name}'
-                else:
-                    url = f'http://127.0.0.1:8000/media/xls/{name}'
+                url = f'{request.META["HTTP_ORIGIN"]}/media/xls/{name}'
                 title = 'Успешно'
                 mes = 'Отчет подготовлен!'
                 nom = 0
@@ -370,10 +364,7 @@ def api_report(request):
                         ws.write(row_num, col_num, row[col_num], font_style)
                 name = f'cats-{nowdatetime.day}{nowdatetime.month}{nowdatetime.year}{nowdatetime.hour}{nowdatetime.minute}.xls'
                 wb.save(f'{settings.MEDIA_ROOT}xls/{name}')
-                if 'linux' in platform.lower():
-                    url = f'https://skiog.ru/media/xls/{name}'
-                else:
-                    url = f'http://127.0.0.1:8000/media/xls/{name}'
+                url = f'{request.META["HTTP_ORIGIN"]}/media/xls/{name}'
                 title = 'Успешно'
                 mes = 'Отчет подготовлен!'
                 nom = 0
