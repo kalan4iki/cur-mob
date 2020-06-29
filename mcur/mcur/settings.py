@@ -242,6 +242,11 @@ LOGGING = {
             "handlers": ["file"],
             "level": "INFO",
             "propagate": True
+        },
+        'file_error': {
+            "handlers": ["file_error"],
+            "level": "ERROR",
+            "propagate": True
         }
     }
 }
