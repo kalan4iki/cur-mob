@@ -56,6 +56,7 @@ import traceback
 logger = logging.getLogger('django.server')
 logger_mail = logging.getLogger('django.request')
 logger_error = logging.getLogger('file_error')
+logger_error2 = logging.basicConfig(filename="error.log", level=logging.DEBUG)
 chars = 'abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 
 
@@ -69,7 +70,7 @@ def log_error(func):
          try:
              func(*args, **argd)
          except:
-             print(logger_error.error(traceback.format_exc()))
+             print(logger_error2.error(traceback.format_exc()))
      return _call_func
 
 
